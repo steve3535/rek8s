@@ -1,2 +1,4 @@
 accounts = {}
+customers = {}
+cards = {}
 transactions = []

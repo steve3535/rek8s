@@ -11,3 +11,14 @@ class Transaction(BaseModel):
     amount: float
     transaction_type: str
     timestamp: datetime = datetime.now()
+
+class Customer(BaseModel):
+    id: int
+    name: str
+    email: str 
+
+class Card(BaseModel):
+    id: int
+    card_number: str  
+    account_id: int 
+    pin: int     
