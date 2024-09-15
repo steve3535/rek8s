@@ -6,7 +6,7 @@ class Account(BaseModel):
     balance: float
 
 class Transaction(BaseModel):
-    id: int
+    id: str
     account_id: int
     amount: float
     transaction_type: str

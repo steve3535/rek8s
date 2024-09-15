@@ -23,7 +23,6 @@ async def create_card(card: Card):
 async def read_account(account_id: int):
     if account_id not in accounts:
         raise HTTPException(status_code=404, detail="Account not found")
-    print(f"current balance: {accounts[account_id].balance}")
     return accounts[account_id]
 
 @app.get("/accounts/card/{card_number}")

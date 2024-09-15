@@ -15,14 +15,15 @@ async def process_transaction(request: TransactionRequest):
     async with httpx.AsyncClient() as client:
         try:
             account_response = await client.get(f"{CORE_BANKING_URL}/accounts/card/{request.card_number}")
+            print(account_response.status_code)
             if account_response.status_code !=200:
                 return TransactionResponse(transaction_id=request.transaction_id,status="failed",message="Invalid Card number",timestamp=datetime.now())
-            account = account_response.json()
-
-
+            
+            account = account_response.json()            
+            
             response = await client.post(f"{CORE_BANKING_URL}/transactions/", json={
                 "id": request.transaction_id,
-                "account_id": account.id,  # In a real system, we'd look up the account ID
+                "account_id": account['id'],  # In a real system, we'd look up the account ID
                 "amount": request.amount,
                 "transaction_type": request.transaction_type
             })
