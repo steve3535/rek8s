@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from .models import TransactionRequest, TransactionResponse
+from models import TransactionRequest, TransactionResponse
 import httpx
 from datetime import datetime
 

@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
-from .models import Account, Transaction, Customer, Card 
-from .database import accounts, transactions, customers, cards
+from models import Account, Transaction, Customer, Card 
+from database import accounts, transactions, customers, cards
 
 app = FastAPI()
 
