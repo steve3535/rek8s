@@ -1,8 +1,8 @@
 from fastapi import FastAPI, HTTPException, Depends
-from models import TransactionRequest, TransactionResponse
+from .models import TransactionRequest, TransactionResponse
 import httpx
 from datetime import datetime
-from database import engine, SessionLocal, NiDB, Base
+from .database import engine, SessionLocal, NiDB, Base
 from sqlalchemy.orm import Session
 
 # Créer les tables dans la base de données

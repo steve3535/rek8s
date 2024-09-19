@@ -1,12 +1,12 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
-from models import AccountCreate, AccountOut, TransactionCreate, TransactionOut, CustomerCreate, CustomerOut, CardCreate, CardOut
-from models import Account, Transaction, Customer, Card
+from .models import AccountCreate, AccountOut, TransactionCreate, TransactionOut, CustomerCreate, CustomerOut, CardCreate, CardOut
+from .models import Account, Transaction, Customer, Card, Base
 from datetime import datetime
-from database import engine, get_db
-import models
+from .database import engine, get_db
 
-models.Base.metadata.create_all(bind=engine)
+
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 

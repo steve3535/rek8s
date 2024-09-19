@@ -4,8 +4,8 @@ from datetime import datetime
 import uuid
 import httpx
 
-from models import WithdrawalRequest, WithdrawalResponse
-from database import engine, SessionLocal, AtmDB, Base, get_db
+from .models import WithdrawalRequest, WithdrawalResponse
+from .database import engine, SessionLocal, AtmDB, Base, get_db
 
 # Créer les tables dans la base de données
 Base.metadata.create_all(bind=engine)
