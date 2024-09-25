@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATM Transactions</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Sidebar with navigation options -->
+    <div class="sidebar">
+        <h2>ATM Services</h2>
+        <a href="#" onclick="loadAtmTransactions()">Transactions</a>
+        <a href="#" onclick="showTransactionForm()">New Transaction</a><br><br>
+        <h2>Core Banking</h2>
+        <a href="index.html">Core Banking</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <h2 id="table-title">Data Table</h2>
+        <!-- Formulaire de transaction -->
+        <div id="transaction-form-container" style="display:none;">
+            
+            <form id="transaction-form">
+                <label for="card_number">Card Number:</label>
+                <input type="text" id="card_number" name="card_number" required><br><br>
+                
+                <label for="amount">Amount:</label>
+                <input type="number" id="amount" name="amount" step="0.01" required><br><br>
+                
+                <label for="atm_id">ATM ID:</label>
+                <input type="text" id="atm_id" name="atm_id" required><br><br>
+                
+                <label for="transaction_type">Transaction Type:</label>
+                <select id="transaction_type" name="transaction_type" required>
+                    <option value="withdrawal">withdrawal</option>
+                    <option value="deposit">deposit</option>
+                </select><br><br>
+                
+                <button type="button" onclick="submitTransactionForm()">Submit Transaction</button>
+            </form>
+        </div>
+
+        <!-- Tableau de données -->
+        <div id="table-container">
+            <table id="data-table">
+                <thead id="table-headers">
+                    <tr>
+                        <!-- En-têtes générés dynamiquement -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Contenu du tableau inséré ici -->
+                </tbody>
+            </table>
+            <div id="pagination">
+                <button onclick="previousPage()">Previous</button>
+                <span>Page 1</span>
+                <button onclick="nextPage()">Next</button>
+            </div>
+        </div>
+    </div>
+    <div id="transaction-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeTransactionModal()">&times;</span>
+            <p id="transaction-message"></p>
+            <button onclick="closeTransactionModal()" class="close-button">Close</button>
+        </div>
+    </div>
+    <script src="atm.js"></script>
+</body>
+</html>

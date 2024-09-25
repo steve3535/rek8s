@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
-from .database import Base
+from database import Base
 
 
 # SQLAlchemy Models (for persistence)
@@ -23,10 +23,10 @@ class Account(Base):
     id = Column(Integer, primary_key=True, index=True)
     balance = Column(Float, default=0)
     customer_id = Column(Integer, ForeignKey("customers.id"))
-
+    transactions = relationship("Transaction", back_populates="account", cascade="all, delete-orphan")
     customer = relationship("Customer", back_populates="accounts")
     cards = relationship("Card", back_populates="account")
-    transactions = relationship("Transaction", back_populates="account")  # Ajout de la relation
+    #transactions = relationship("Transaction", back_populates="account") 
 
 
 class Card(Base):
@@ -34,15 +34,14 @@ class Card(Base):
     id = Column(Integer, primary_key=True, index=True)
     card_number = Column(String, unique=True, index=True)
     account_id = Column(Integer, ForeignKey("accounts.id"))
-    pin = Column(Integer)
-
+    pin = Column(Integer)  
     account = relationship("Account", back_populates="cards")
     
 
 class Transaction(Base):
     __tablename__ = "transactions"
     id = Column(Integer, primary_key=True, index=True)
-    account_id = Column(Integer, ForeignKey("accounts.id"))
+    account_id = Column(Integer, ForeignKey("accounts.id", ondelete="CASCADE"))
     amount = Column(Float)
     transaction_type = Column(String)
     status = Column(String, nullable=False)
@@ -62,9 +61,12 @@ class AccountCreate(BaseModel):
 class AccountOut(BaseModel):
     id: int
     balance: float
-
+    customer_id: int 
     class Config:
         orm_mode = True
+
+class AccountUpdate(BaseModel):
+    balance: float
 
 class TransactionCreate(BaseModel):
     account_id: int
@@ -76,10 +78,13 @@ class TransactionOut(BaseModel):
     account_id: int
     amount: float
     transaction_type: str
+    status: str
+    message: str
     timestamp: datetime
 
     class Config:
         orm_mode = True
+
 
 class CustomerCreate(BaseModel):
     name: str
@@ -93,6 +98,10 @@ class CustomerOut(BaseModel):
     class Config:
         orm_mode = True
 
+class  CustomerUpdate(BaseModel):
+    name: str
+    email: str
+
 class CardCreate(BaseModel):
     card_number: str
     account_id: int
@@ -105,3 +114,6 @@ class CardOut(BaseModel):
 
     class Config:
         orm_mode = True
+
+class CardUpdate(BaseModel):
+    pin: int
