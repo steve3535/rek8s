@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banking App Dashboard</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Fichier CSS pour le style -->
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Core Banking</h2>
+        <a href="#" onclick="loadCustomers()">Customers</a>
+        <a href="#" onclick="loadAccounts()">Accounts</a>
+        <a href="#" onclick="loadCards()">Cards</a>
+        <a href="#" onclick="loadTransactions()">Transactions</a>
+        <h2>NI switch service</h2>
+        <a href="#" onclick="loadNiTransactions()">NI Transactions</a>
+        <h2>ATM service</h2>
+        <a href="atm.html">ATM service</a>
+    </div>
+    <div class="content">
+        <h2 id="table-title">Data Table</h2>
+        <button id="add-button" class="add-button" style="display: none;" onclick="openModal()">Add New</button>
+        <table id="data-table">
+            <thead id="table-headers">
+                <tr>
+                    <!-- En-têtes générés dynamiquement -->
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Contenu du tableau inséré ici -->
+            </tbody>
+        </table>
+        <div id="pagination">
+            <button onclick="previousPage()">Previous</button>
+            <span>Page 1</span>
+            <button onclick="nextPage()">Next</button>
+        </div>
+    </div>
+    
+
+    <!-- Modal pour la création de nouveaux objets -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="modal-title">Add New Object</h2>
+            <form id="create-form">
+                <!-- Formulaire dynamique généré par JavaScript -->
+            </form>
+            <button onclick="submitForm()">Submit</button>
+        </div>
+    </div>
+    
+    <script src="index.js"></script> <!-- Fichier JavaScript pour la logique -->
+</body>
+</html>

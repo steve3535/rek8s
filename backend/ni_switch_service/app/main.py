@@ -1,9 +1,11 @@
 from fastapi import FastAPI, HTTPException, Depends
-from .models import TransactionRequest, TransactionResponse
+from models import TransactionRequest, TransactionResponse, TransactionOut, NiDB
 import httpx
 from datetime import datetime
-from .database import engine, SessionLocal, NiDB, Base
+from database import engine, SessionLocal, Base
 from sqlalchemy.orm import Session
+from typing import List
+from fastapi.middleware.cors import CORSMiddleware
 
 # Créer les tables dans la base de données
 Base.metadata.create_all(bind=engine)
@@ -11,6 +13,20 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 CORE_BANKING_URL = "http://localhost:8000"
+
+# Définir les origines autorisées (peut-être '*' pour autoriser toutes les origines)
+origins = [
+    "http://127.0.0.1:5500",  # Origine pour votre frontend
+    "http://localhost:5500",  # Autre origine potentielle
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Dépendance pour obtenir la session de base de données
 def get_db():
@@ -23,80 +39,99 @@ def get_db():
 
 @app.post("/process_transaction/", response_model=TransactionResponse)
 async def process_transaction(request: TransactionRequest, db: Session = Depends(get_db)):
-    # In a real system, we'd do some validation and routing logic here
-    
-    # For now, we'll just forward the request to the core banking service
+    # Vérification de la carte
     async with httpx.AsyncClient() as client:
         try:
             account_response = await client.get(f"{CORE_BANKING_URL}/accounts/card/{request.card_number}")
-            print(account_response.status_code)
-            if account_response.status_code !=200:
-                # Persist successful response
+            
+            if account_response.status_code != 200:
+                # Carte invalide
                 db_response = NiDB(
                     transaction_id=request.transaction_id,
                     card_number=request.card_number,
-                    amount = request.amount,
+                    amount=request.amount,
                     atm_id=request.atm_id,
-                    transaction_type = request.transaction_type,
+                    transaction_type=request.transaction_type,
                     status="failed",
                     message="Invalid Card number",
                     timestamp=datetime.now()
                 )
                 db.add(db_response)
                 db.commit()
-                return TransactionResponse(transaction_id=request.transaction_id,status="failed",message="Invalid Card number",timestamp=datetime.now())
+                return TransactionResponse(
+                    transaction_id=request.transaction_id,
+                    status="failed",
+                    message="Invalid Card number",
+                    transaction_type=request.transaction_type,
+                    timestamp=datetime.now()
+                )
             
-            account = account_response.json()            
+            account = account_response.json()
+
+            # Vérification du type de transaction et du solde
+            if request.transaction_type == 'withdrawal' and account['balance'] < request.amount:
+                # Solde insuffisant
+                db_response = NiDB(
+                    transaction_id=request.transaction_id,
+                    card_number=request.card_number,
+                    amount=request.amount,
+                    atm_id=request.atm_id,
+                    transaction_type=request.transaction_type,
+                    status="failed",
+                    message="Insufficient funds",
+                    timestamp=datetime.now()
+                )
+                db.add(db_response)
+                db.commit()
+                return TransactionResponse(
+                    transaction_id=request.transaction_id,
+                    status="failed",
+                    message="Insufficient funds",
+                    transaction_type=request.transaction_type,
+                    timestamp=datetime.now()
+                )
             
+            # Appel à l'API des transactions dans le core banking
             response = await client.post(f"{CORE_BANKING_URL}/transactions/", json={
                 "id": request.transaction_id,
-                "account_id": account['id'],  # In a real system, we'd look up the account ID
+                "account_id": account['id'],
                 "amount": request.amount,
                 "transaction_type": request.transaction_type
             })
-            
+
             if response.status_code == 200:
-                # Persist successful response
+                # Transaction réussie
                 db_response = NiDB(
                     transaction_id=request.transaction_id,
                     card_number=request.card_number,
-                    amount = request.amount,
+                    amount=request.amount,
                     atm_id=request.atm_id,
-                    transaction_type = request.transaction_type,
-                    status="success",
-                    message="Withdrawal successful",
+                    transaction_type=request.transaction_type,
+                    status="successful",
+                    message=f"{request.transaction_type.capitalize()} successful",
                     timestamp=datetime.now()
                 )
                 db.add(db_response)
                 db.commit()
                 return TransactionResponse(
                     transaction_id=request.transaction_id,
-                    status="success",
-                    message="Transaction processed successfully",
+                    status="successful",
+                    message=f"{request.transaction_type.capitalize()} successful",
+                    transaction_type=request.transaction_type,
                     timestamp=datetime.now()
                 )
             else:
-                # Persist failed response
-                db_response = NiDB(
-                    transaction_id=request.transaction_id,
-                    card_number=request.card_number,
-                    amount = request.amount,
-                    atm_id=request.atm_id,
-                    transaction_type = request.transaction_type,
-                    status="failed",
-                    message=f"Withdrawal failed: {response.json().get('detail', 'Unknown error')}",
-                    timestamp=datetime.now()
-                )
-                db.add(db_response)
-                db.commit()
-                return TransactionResponse(
-                    transaction_id=request.transaction_id,
-                    status="failed",
-                    message=f"Transaction failed: {response.json().get('detail', 'Unknown error')}",
-                    timestamp=datetime.now()
-                )
+                raise HTTPException(status_code=response.status_code, detail="Transaction failed in core banking")
+        
         except httpx.RequestError as e:
             raise HTTPException(status_code=500, detail=f"Error communicating with core banking: {str(e)}")
+
+
+@app.get("/transactions/", response_model=List[TransactionOut])
+def get_transaction(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    transactions = db.query(NiDB).order_by(NiDB.timestamp.desc()).offset(skip).limit(limit).all()
+    return transactions
+
 
 @app.get("/health")
 async def health_check():
