@@ -16,14 +16,12 @@ app = FastAPI()
 
 SWITCH_URL = "http://127.0.0.1:8002"
 
-origins = [
-    "http://127.0.0.1:5500",  # Origine pour votre frontend
-    "http://localhost:5500",  # Autre origine potentielle
-]
+#origins = ["http://127.0.0.1:5500",  "http://localhost:5500",  ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    #allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
