@@ -6,23 +6,26 @@ from database import engine, SessionLocal, Base
 from sqlalchemy.orm import Session
 from typing import List
 from fastapi.middleware.cors import CORSMiddleware
+import os
+from dotenv import load_dotenv
+import uvicorn
 
 # Créer les tables dans la base de données
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-
-CORE_BANKING_URL = "http://localhost:8000"
+load_dotenv(dotenv_path="/rek8s/backend/.env")
+port_ni = int(os.getenv("PORT_NI", 8005))
+port_banking = int(os.getenv("PORT_BANKING", 8000))
+CORE_BANKING_URL = f"http://localhost:{port_banking}"
 
 # Définir les origines autorisées (peut-être '*' pour autoriser toutes les origines)
-origins = [
-    "http://127.0.0.1:5500",  # Origine pour votre frontend
-    "http://localhost:5500",  # Autre origine potentielle
-]
+#origins = [ "http://127.0.0.1:5500",      "http://localhost:5500",  ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    #allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -136,3 +139,6 @@ def get_transaction(skip: int = 0, limit: int = 10, db: Session = Depends(get_db
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=port_ni, reload=True)

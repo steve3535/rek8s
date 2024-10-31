@@ -6,22 +6,26 @@ from datetime import datetime
 from database import engine, get_db
 from typing import List
 from fastapi.middleware.cors import CORSMiddleware
+import os
+from dotenv import load_dotenv
+import uvicorn
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
+load_dotenv(dotenv_path="/rek8s/backend/.env")
+
+port_banking = int(os.getenv("PORT_BANKING", 9000))
 
 
 # Définir les origines autorisées (peut-être '*' pour autoriser toutes les origines)
-origins = [
-    "http://127.0.0.1:5500",  # Origine pour votre frontend
-    "http://localhost:5500",  # Autre origine potentielle
-]
+#origins = [   "http://127.0.0.1:5500",    "http://localhost:5500"]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    #allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -250,3 +254,7 @@ def create_transaction(transaction: TransactionCreate, db: Session = Depends(get
 def get_transaction(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     transactions = db.query(Transaction).order_by(Transaction.timestamp.desc()).offset(skip).limit(limit).all()
     return transactions
+
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=port_banking, reload=True)

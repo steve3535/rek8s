@@ -29,7 +29,7 @@ function submitTransactionForm() {
    
 
     // Nettoyer le message précédent
-    document.getElementById('response-message').innerText = '';
+    //document.getElementById('response-message').innerText = '';
 
   
     fetch(url, {
