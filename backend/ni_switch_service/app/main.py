@@ -24,7 +24,6 @@ CORE_BANKING_URL = f"http://localhost:{port_banking}"
 
 app.add_middleware(
     CORSMiddleware,
-    #allow_origins=origins,
     allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
