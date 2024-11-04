@@ -63,16 +63,18 @@ export function submitForm() {
     console.log(`Submitting data for: ${currentObjectType}`);
 
     if (currentObjectType === "customers") {
-        url = "${config.core_bankin_url}/customers/";
+        url = `${config.core_banking_url}/customers/`;
+        //url= `${config.core_banking_url}/customers/`;
     } else if (currentObjectType === "accounts") {
-        url = "${config.core_bankin_url}/accounts/";
+        url = `${config.core_banking_url}/accounts/`;
     } else if (currentObjectType === "cards") {
-        url = "${config.core_bankin_url}/cards/";
+        url = `${config.core_banking_url}/cards/`;
     } else if (currentObjectType === "transactions") {
-        url = "${config.core_bankin_url}/transactions/";
-    }else if (currentObjectType === "NI transactions") {
-        url = "${config.ni_url}/transactions/";
+        url = `${config.core_banking_url}/transactions/`;
+    } else if (currentObjectType === "NI transactions") {
+        url = `${config.ni_url}/transactions/`;
     }
+    
 
     // Assurez-vous que l'URL est correcte
     console.log(`Sending POST request to: ${url} with data:`, data);
@@ -133,19 +135,21 @@ window.loadNiTransactions = function() {
 
 // Fonction pour charger les données dans le tableau en fonction du type
 export function loadTable(type) {
+    
     currentObjectType = type;
     const addButton = document.getElementById('add-button');
     addButton.style.display = 'block';
 
     // Modifier le texte du bouton en fonction de l'objet sélectionné
     if (currentObjectType === "customers") {
-        url = `${config.core_bankin_url}/customers/`;
+        url = `${config.core_banking_url}/customers/`;
+        //url= `${config.core_banking_url}/customers/`;
     } else if (currentObjectType === "accounts") {
-        url = `${config.core_bankin_url}/accounts/`;
+        url = `${config.core_banking_url}/accounts/`;
     } else if (currentObjectType === "cards") {
-        url = `${config.core_bankin_url}/cards/`;
+        url = `${config.core_banking_url}/cards/`;
     } else if (currentObjectType === "transactions") {
-        url = `${config.core_bankin_url}/transactions/`;
+        url = `${config.core_banking_url}/transactions/`;
     } else if (currentObjectType === "NI transactions") {
         url = `${config.ni_url}/transactions/`;
     }
@@ -155,19 +159,19 @@ export function loadTable(type) {
    
 
     if (type === "customers") {
-        url = `${config.core_bankin_url}/customers/?skip=${(currentPage - 1) * itemsPerPage}&limit=${itemsPerPage}`;
+        url = `${config.core_banking_url}/customers/?skip=${(currentPage - 1) * itemsPerPage}&limit=${itemsPerPage}`;
         columns = ["id", "name", "email"];
         document.getElementById("table-title").textContent = "Customers Data Table";
     } else if (type === "accounts") {
-        url = `${config.core_bankin_url}/accounts/?skip=${(currentPage - 1) * itemsPerPage}&limit=${itemsPerPage}`;
+        url = `${config.core_banking_url}/accounts/?skip=${(currentPage - 1) * itemsPerPage}&limit=${itemsPerPage}`;
         columns = ["id", "balance", "customer_id"];
         document.getElementById("table-title").textContent = "Accounts Data Table";
     } else if (type === "cards") {
-        url = `${config.core_bankin_url}/cards/?skip=${(currentPage - 1) * itemsPerPage}&limit=${itemsPerPage}`;
+        url = `${config.core_banking_url}/cards/?skip=${(currentPage - 1) * itemsPerPage}&limit=${itemsPerPage}`;
         columns = ["id", "card_number", "account_id"];
         document.getElementById("table-title").textContent = "Cards Data Table";
     } else if (type === "transactions") {
-        url = `${config.core_bankin_url}/transactions/?skip=${(currentPage - 1) * itemsPerPage}&limit=${itemsPerPage}`;
+        url = `${config.core_banking_url}/transactions/?skip=${(currentPage - 1) * itemsPerPage}&limit=${itemsPerPage}`;
         columns = ["id", "account_id", "amount", "transaction_type", "status", "message", "timestamp"];
         document.getElementById("table-title").textContent = "Transactions Data Table";
     }else if (type === "NI transactions") {
@@ -242,10 +246,12 @@ loadCustomers();
 //window.loadAtmTransactions = loadCustomers();
 //window.showTransactionForm = loadNiTransactions();
 
+window.submitForm = submitForm;
+
 window.onload = function() {
     window.openModal = openModal;
     window.closeModal = closeModal;
     window.nextPage = nextPage;
     window.previousPage = previousPage;
-
+    
 };

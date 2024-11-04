@@ -30,7 +30,7 @@ export function submitTransactionForm() {
     const data = Object.fromEntries(formData.entries());
     //const url = "http://127.0.0.1:8001/withdraw/";
     const url = `${config.atm_url}/withdraw/`;
-    //const url = "${config.atm_url}/withdraw/";
+    
 
    
 
