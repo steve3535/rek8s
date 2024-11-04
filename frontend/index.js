@@ -71,11 +71,11 @@ export function submitForm() {
     // Définir l'URL selon le type d'objet
     let url = "";
     if (currentObjectType === 'customers') {
-        url = `${config.core_banking_url}/customers/`; // Exemple de chemin pour ajouter un client
+        url = `${config.core_banking_url}/customers/`;
     } else if (currentObjectType === 'accounts') {
-        url = `${config.core_banking_url}/accounts/`; // Exemple de chemin pour ajouter un compte
+        url = `${config.core_banking_url}/accounts/`; 
     } else if (currentObjectType === 'cards') {
-        url = `${config.core_banking_url}/cards/`; // Exemple de chemin pour ajouter une carte
+        url = `${config.core_banking_url}/cards/`;
     }
 
     // Log pour vérifier le type de données soumises
