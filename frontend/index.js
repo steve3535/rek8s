@@ -22,29 +22,30 @@ export function openModal() {
         modalTitle.innerText = 'Add New Customer';
         createForm.innerHTML = `
             <label for="name">Name:</label>
-            <input type="text" id="name" name="name"><br><br>
+            <input type="text" id="name" name="name" required><br><br>
             <label for="email">Email:</label>
-            <input type="text" id="email" name="email"><br><br>
+            <input type="text" id="email" name="email" required><br><br>
         `;
     } else if (currentObjectType === 'accounts') {
         modalTitle.innerText = 'Add New Account';
         createForm.innerHTML = `
             <label for="balance">Balance:</label>
-            <input type="number" id="balance" name="balance"><br><br>
+            <input type="number" id="balance" name="balance" required><br><br>
             <label for="customer_id">Customer ID:</label>
-            <input type="number" id="customer_id" name="customer_id"><br><br>
+            <input type="number" id="customer_id" name="customer_id" required><br><br>
         `;
     } else if (currentObjectType === 'cards') {
         modalTitle.innerText = 'Add New Card';
         createForm.innerHTML = `
             <label for="card_number">Card Number:</label>
-            <input type="text" id="card_number" name="card_number"><br><br>
+            <input type="text" id="card_number" name="card_number" required><br><br>
             <label for="account_id">Account ID:</label>
-            <input type="number" id="account_id" name="account_id"><br><br>
+            <input type="number" id="account_id" name="account_id" required><br><br>
             <label for="pin">PIN:</label>
-            <input type="number" id="pin" name="pin"><br><br>
+            <input type="number" id="pin" name="pin" required><br><br>
         `;
-    } 
+    }
+    
 }
 
 // Fonction pour fermer le modal
@@ -55,52 +56,57 @@ export function closeModal() {
 // Fonction pour soumettre le formulaire
 export function submitForm() {
     const form = document.getElementById('create-form');
+    
+    // Vérification de la validité du formulaire
+    if (!form.checkValidity()) {
+        alert("Please fill in all required fields.");
+        form.reportValidity(); // Affiche les erreurs dans le formulaire
+        return; // Empêche la soumission si le formulaire est invalide
+    }
+
+    // Récupération des données du formulaire
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
+
+    // Définir l'URL selon le type d'objet
     let url = "";
-
-    // Vérifiez que currentObjectType est bien défini
-    console.log(`Submitting data for: ${currentObjectType}`);
-
-    if (currentObjectType === "customers") {
-        url = `${config.core_banking_url}/customers/`;
-        //url= `${config.core_banking_url}/customers/`;
-    } else if (currentObjectType === "accounts") {
-        url = `${config.core_banking_url}/accounts/`;
-    } else if (currentObjectType === "cards") {
-        url = `${config.core_banking_url}/cards/`;
-    } else if (currentObjectType === "transactions") {
-        url = `${config.core_banking_url}/transactions/`;
-    } else if (currentObjectType === "NI transactions") {
-        url = `${config.ni_url}/transactions/`;
+    if (currentObjectType === 'customers') {
+        url = `${config.core_banking_url}/customers/`; // Exemple de chemin pour ajouter un client
+    } else if (currentObjectType === 'accounts') {
+        url = `${config.core_banking_url}/accounts/`; // Exemple de chemin pour ajouter un compte
+    } else if (currentObjectType === 'cards') {
+        url = `${config.core_banking_url}/cards/`; // Exemple de chemin pour ajouter une carte
     }
-    
 
-    // Assurez-vous que l'URL est correcte
-    console.log(`Sending POST request to: ${url} with data:`, data);
+    // Log pour vérifier le type de données soumises
+    console.log(`Submitting data for: ${currentObjectType}`);
+    console.log(data);
 
+    // Envoi des données à l'API via fetch
     fetch(url, {
-        method: "POST",
+        method: 'POST',
         headers: {
-            "Content-Type": "application/json"
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error('Network response was not ok');
         }
         return response.json();
     })
-    .then(data => {
-        console.log("Success:", data);
-        closeModal(); // Fermer le modal après succès
-        loadTable(currentObjectType); // Recharger les données dans le tableau
+    .then(responseData => {
+        console.log('Success:', responseData);
+        alert('Form submitted successfully!');
+        closeModal(); // Ferme la modal après la soumission
     })
-    .catch((error) => {
-        console.error("Error:", error);
+    .catch(error => {
+        console.error('Error:', error);
+        alert('There was an error submitting the form. Please try again.');
     });
 }
+
 
 // Fonction pour charger les clients
 window.loadCustomers = function() {
