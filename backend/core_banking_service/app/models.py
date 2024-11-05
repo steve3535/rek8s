@@ -12,9 +12,9 @@ Base = declarative_base()
 class Customer(Base):
     __tablename__ = "customers"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
-    email = Column(String, index=True)
-
+    name = Column(String, index=True, unique=True, nullable=False)
+    email = Column(String, index=True, unique=True, nullable=False)
+ 
     accounts = relationship("Account", back_populates="customer")
 
 
@@ -22,7 +22,7 @@ class Account(Base):
     __tablename__ = "accounts"
     id = Column(Integer, primary_key=True, index=True)
     balance = Column(Float, default=0)
-    customer_id = Column(Integer, ForeignKey("customers.id"))
+    customer_id = Column(Integer, ForeignKey("customers.id"), unique=True, nullable=False)
     transactions = relationship("Transaction", back_populates="account", cascade="all, delete-orphan")
     customer = relationship("Customer", back_populates="accounts")
     cards = relationship("Card", back_populates="account")
@@ -32,9 +32,9 @@ class Account(Base):
 class Card(Base):
     __tablename__ = "cards"
     id = Column(Integer, primary_key=True, index=True)
-    card_number = Column(String, unique=True, index=True)
-    account_id = Column(Integer, ForeignKey("accounts.id"))
-    pin = Column(Integer)  
+    card_number = Column(String, unique=True, nullable=False, index=True)
+    account_id = Column(Integer, ForeignKey("accounts.id"), nullable=False)
+    pin = Column(Integer, nullable=False)  
     account = relationship("Account", back_populates="cards")
     
 

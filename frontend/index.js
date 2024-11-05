@@ -16,9 +16,9 @@ function openModal() {
         modalTitle.innerText = 'Add New Customer';
         createForm.innerHTML = `
             <label for="name">Name:</label>
-            <input type="text" id="name" name="name"><br><br>
+            <input type="text" id="name" name="name" required><br><br>
             <label for="email">Email:</label>
-            <input type="text" id="email" name="email"><br><br>
+            <input type="email" id="email" name="email" required><br><br>
         `;
     } else if (currentObjectType === 'accounts') {
         modalTitle.innerText = 'Add New Account';
@@ -32,11 +32,11 @@ function openModal() {
         modalTitle.innerText = 'Add New Card';
         createForm.innerHTML = `
             <label for="card_number">Card Number:</label>
-            <input type="text" id="card_number" name="card_number"><br><br>
+            <input type="text" id="card_number" name="card_number" required><br><br>
             <label for="account_id">Account ID:</label>
-            <input type="number" id="account_id" name="account_id"><br><br>
+            <input type="number" id="account_id" name="account_id" required><br><br>
             <label for="pin">PIN:</label>
-            <input type="number" id="pin" name="pin"><br><br>
+            <input type="number" id="pin" name="pin" required><br><br>
         `;
     } 
 }
@@ -49,12 +49,20 @@ function closeModal() {
 // Fonction pour soumettre le formulaire
 function submitForm() {
     const form = document.getElementById('create-form');
+
+    // Vérification de la validité du formulaire
+    if (!form.checkValidity()) {
+        alert("Please fill in all required fields.");
+        form.reportValidity(); // Affiche les erreurs dans le formulaire
+        return; // Empêche la soumission si le formulaire est invalide
+    }
+
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
-    let url = "";
 
-    // Vérifiez que currentObjectType est bien défini
-    console.log(`Submitting data for: ${currentObjectType}`);
+
+  // Definir l'url selon l'Objet
+    let url = "";
 
     if (currentObjectType === "customers") {
         url = "http://127.0.0.1:8000/customers/";
@@ -68,9 +76,11 @@ function submitForm() {
         url = "http://127.0.0.1:8002/transactions/";
     }
 
-    // Assurez-vous que l'URL est correcte
-    console.log(`Sending POST request to: ${url} with data:`, data);
+    // Vérifiez que currentObjectType est bien défini
+    console.log(`Submitting data for: ${currentObjectType}`);
+    console.log(data);
 
+    // Envoi des données à l'API via fetch
     fetch(url, {
         method: "POST",
         headers: {
@@ -143,7 +153,6 @@ function loadTable(type) {
     }else if (type === "NI transactions") {
         addButton.style.display = 'none'; // Pas de bouton "Add New" pour les transactions
     }
-
 
     let url = "";
     let columns = [];
