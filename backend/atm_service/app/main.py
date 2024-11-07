@@ -7,14 +7,18 @@ from models import WithdrawalRequest, WithdrawalResponse, AtmDB, TransactionOut
 from database import engine, SessionLocal, Base, get_db
 from typing import List
 from fastapi.middleware.cors import CORSMiddleware
-
+import os
+from dotenv import load_dotenv
+import uvicorn
 # Créer les tables dans la base de données
 Base.metadata.create_all(bind=engine)
 
 # Configuration FastAPI
 app = FastAPI()
-
-SWITCH_URL = "http://127.0.0.1:8002"
+load_dotenv(dotenv_path="/rek8s/backend/.env")
+port_atm = int(os.getenv("PORT_ATM", 8008))
+port_ni = int(os.getenv("PORT_NI", 8002))
+SWITCH_URL = f"http://127.0.0.1:{port_ni}"
 
 #origins = ["http://127.0.0.1:5500",  "http://localhost:5500",  ]
 
@@ -115,3 +119,7 @@ def get_transaction(skip: int = 0, limit: int = 10, db: Session = Depends(get_db
 @app.get('/health')
 async def health_check():
     return {"status": "healthy"}
+
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=port_atm, reload=True)
