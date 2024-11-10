@@ -1,35 +1,41 @@
+// Importer le module de configuration
+import config from './config.js';
+
+
 // Variables globales
 let currentObjectType = '';
 let currentPage = 1;
 const itemsPerPage = 7;
 
 // Fonction pour ouvrir le modal avec un message
-function showTransactionModal(message) {
+export function showTransactionModal(message) {
     document.getElementById('transaction-message').innerText = message;
     document.getElementById('transaction-modal').style.display = 'block';
 }
 
 // Fonction pour fermer le modal
-function closeTransactionModal() {
+export function closeTransactionModal() {
     document.getElementById('transaction-modal').style.display = 'none';
 }
 
 // Fonction pour fermer le modal
-function closeModal() {
+export function closeModal() {
     document.getElementById('modal').style.display = 'none';
 }
 
 // Fonction pour soumettre le formulaire de transaction
-function submitTransactionForm() {
+export function submitTransactionForm() {
     const form = document.getElementById('transaction-form');
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
-    const url = "http://127.0.0.1:8001/withdraw/";
+    //const url = "http://127.0.0.1:8001/withdraw/";
+    const url = `${config.atm_url}/withdraw/`;
+    
 
    
 
     // Nettoyer le message précédent
-    document.getElementById('response-message').innerText = '';
+    //document.getElementById('response-message').innerText = '';
 
   
     fetch(url, {
@@ -48,9 +54,9 @@ function submitTransactionForm() {
         return response.json();
     })
     .then(data => {
-        console.log("Transaction Success:", data);
+        console.log("Transaction :", data);
         // Afficher le message dans le modal
-        showTransactionModal(`Transaction Successful: ${data.message}`);
+        showTransactionModal(`Transaction: ${data.message}`);
         // Masquer le formulaire et recharger la liste des transactions
         document.getElementById('transaction-form-container').style.display = 'none';
         document.getElementById('data-table').style.display = 'block'; // Afficher le tableau après soumission
@@ -67,7 +73,7 @@ function submitTransactionForm() {
 
 
 // Fonction pour charger les transactions
-function loadAtmTransactions() {
+export function loadAtmTransactions() {
     document.getElementById('transaction-form-container').style.display = 'none';
     document.getElementById('data-table').style.display = 'block';
     document.getElementById('pagination').style.display = 'block';
@@ -75,13 +81,13 @@ function loadAtmTransactions() {
 }
 
 // Fonction pour charger les données
-function loadTable(type) {
+export function loadTable(type) {
     currentObjectType = type;
     let url = "";
     let columns = [];
 
     if (type === "transactions") {
-        url = `http://127.0.0.1:8001/showtransactions/?skip=${(currentPage - 1) * itemsPerPage}&limit=${itemsPerPage}`;
+        url = `${config.atm_url}/showtransactions/?skip=${(currentPage - 1) * itemsPerPage}&limit=${itemsPerPage}`;
         columns = ["transaction_id", "card_number", "amount", "atm_id", "status", "message", "timestamp"];
         document.getElementById("table-title").textContent = "Transactions";
     }
@@ -102,7 +108,7 @@ function loadTable(type) {
 }
 
 // Fonction pour remplir le tableau
-function populateTable(data, columns) {
+export function populateTable(data, columns) {
     const tableHeaders = document.getElementById("table-headers");
     const tableBody = document.getElementById("data-table").querySelector("tbody");
 
@@ -126,7 +132,7 @@ function populateTable(data, columns) {
 }
 
 // Afficher le formulaire de transaction
-function showTransactionForm() {
+export function showTransactionForm() {
     document.getElementById('transaction-form-container').style.display = 'block';
     document.getElementById('data-table').style.display = 'none'; // Masquer le tableau si nécessaire
     document.getElementById("table-title").textContent = "New Transaction"
@@ -135,7 +141,7 @@ function showTransactionForm() {
 }
 
 // Naviguer à la page précédente
-function previousPage() {
+export function previousPage() {
     if (currentPage > 1) {
         currentPage--;
         loadTable(currentObjectType);
@@ -143,16 +149,29 @@ function previousPage() {
 }
 
 // Naviguer à la page suivante
-function nextPage() {
+export function nextPage() {
     currentPage++;
     loadTable(currentObjectType);
 }
 
 // Capitaliser la première lettre
-function capitalizeFirstLetter(string) {
+export function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-// Charger les transactions par défaut au chargement de la page
-//showTransactionForm();
-loadAtmTransactions();
+
+
+// Assigner les fonctions à l'objet global
+
+window.showTransactionForm = showTransactionForm;
+window.loadAtmTransactions = loadAtmTransactions;
+window.submitTransactionForm = submitTransactionForm;
+window.closeTransactionModal = closeTransactionModal;
+
+
+window.onload = function() {
+     //showTransactionForm(); // Si vous voulez montrer le formulaire par défaut
+    loadAtmTransactions(); // Si vous voulez charger les transactions au démarrage
+    window.nextPage = nextPage;
+    window.previousPage = previousPage;
+};

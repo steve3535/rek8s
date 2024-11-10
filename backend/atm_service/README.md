@@ -5,3 +5,11 @@
    cd app
    uvicorn main:app --reload --port=8001
    ```
+4. paramétrage des ports:
+ install: python-dotenv
+ pour modifier les ports il faut se référer au fichier .env dans la racine du répertoire  de backend 
+5. pour lancer les service faut activer l'env de dev et se positionner dans le répertoire app/
+```bash
+   cd app
+   python main.py
+   ```

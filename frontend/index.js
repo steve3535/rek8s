@@ -1,9 +1,15 @@
+// Importer le module de configuration
+import config from './config.js';
+let url = "";
+let columns = [];
+
+
 // Garde la trace de l'objet sélectionné
 let currentObjectType = '';
 let currentPage = 1; // Page actuelle
 const itemsPerPage = 10; // Nombre d'éléments par page
 // Fonction pour ouvrir le modal avec le formulaire approprié
-function openModal() {
+export function openModal() {
     document.getElementById('modal').style.display = 'block';
     const modalTitle = document.getElementById('modal-title');
     const createForm = document.getElementById('create-form');
@@ -42,12 +48,12 @@ function openModal() {
 }
 
 // Fonction pour fermer le modal
-function closeModal() {
+export function closeModal() {
     document.getElementById('modal').style.display = 'none';
 }
 
 // Fonction pour soumettre le formulaire
-function submitForm() {
+export function submitForm() {
     const form = document.getElementById('create-form');
 
     // Vérification de la validité du formulaire
@@ -65,16 +71,18 @@ function submitForm() {
     let url = "";
 
     if (currentObjectType === "customers") {
-        url = "http://127.0.0.1:8000/customers/";
+        url = `${config.core_banking_url}/customers/`;
+        //url= `${config.core_banking_url}/customers/`;
     } else if (currentObjectType === "accounts") {
-        url = "http://127.0.0.1:8000/accounts/";
+        url = `${config.core_banking_url}/accounts/`;
     } else if (currentObjectType === "cards") {
-        url = "http://127.0.0.1:8000/cards/";
+        url = `${config.core_banking_url}/cards/`;
     } else if (currentObjectType === "transactions") {
-        url = "http://127.0.0.1:8000/transactions/";
-    }else if (currentObjectType === "NI transactions") {
-        url = "http://127.0.0.1:8002/transactions/";
+        url = `${config.core_banking_url}/transactions/`;
+    } else if (currentObjectType === "NI transactions") {
+        url = `${config.ni_url}/transactions/`;
     }
+    
 
     // Vérifiez que currentObjectType est bien défini
     console.log(`Submitting data for: ${currentObjectType}`);
@@ -136,45 +144,53 @@ window.loadNiTransactions = function() {
 
 
 // Fonction pour charger les données dans le tableau en fonction du type
-function loadTable(type) {
+export function loadTable(type) {
+    
     currentObjectType = type;
     const addButton = document.getElementById('add-button');
     addButton.style.display = 'block';
 
     // Modifier le texte du bouton en fonction de l'objet sélectionné
-    if (type === "customers") {
-        addButton.textContent = "Add New Customer";
-    } else if (type === "accounts") {
-        addButton.textContent = "Add New Account";
-    } else if (type === "cards") {
-        addButton.textContent = "Add New Card";
-    } else if (type === "transactions") {
-        addButton.style.display = 'none'; // Pas de bouton "Add New" pour les transactions
-    }else if (type === "NI transactions") {
-        addButton.style.display = 'none'; // Pas de bouton "Add New" pour les transactions
+    if (currentObjectType === "customers") {
+        url = `${config.core_banking_url}/customers/`;
+        //url= `${config.core_banking_url}/customers/`;
+    } else if (currentObjectType === "accounts") {
+        url = `${config.core_banking_url}/accounts/`;
+    } else if (currentObjectType === "cards") {
+        url = `${config.core_banking_url}/cards/`;
+    } else if (currentObjectType === "transactions") {
+        url = `${config.core_banking_url}/transactions/`;
+    } else if (currentObjectType === "NI transactions") {
+        url = `${config.ni_url}/transactions/`;
     }
+    
 
+<<<<<<< HEAD
     let url = "";
     let columns = [];
+=======
+
+   
+>>>>>>> main
 
     if (type === "customers") {
-        url = `http://127.0.0.1:8000/customers/?skip=${(currentPage - 1) * itemsPerPage}&limit=${itemsPerPage}`;
+        url = `${config.core_banking_url}/customers/?skip=${(currentPage - 1) * itemsPerPage}&limit=${itemsPerPage}`;
         columns = ["id", "name", "email"];
         document.getElementById("table-title").textContent = "Customers Data Table";
     } else if (type === "accounts") {
-        url = `http://127.0.0.1:8000/accounts/?skip=${(currentPage - 1) * itemsPerPage}&limit=${itemsPerPage}`;
+        url = `${config.core_banking_url}/accounts/?skip=${(currentPage - 1) * itemsPerPage}&limit=${itemsPerPage}`;
         columns = ["id", "balance", "customer_id"];
         document.getElementById("table-title").textContent = "Accounts Data Table";
     } else if (type === "cards") {
-        url = `http://127.0.0.1:8000/cards/?skip=${(currentPage - 1) * itemsPerPage}&limit=${itemsPerPage}`;
+        url = `${config.core_banking_url}/cards/?skip=${(currentPage - 1) * itemsPerPage}&limit=${itemsPerPage}`;
         columns = ["id", "card_number", "account_id"];
         document.getElementById("table-title").textContent = "Cards Data Table";
     } else if (type === "transactions") {
-        url = `http://127.0.0.1:8000/transactions/?skip=${(currentPage - 1) * itemsPerPage}&limit=${itemsPerPage}`;
+        url = `${config.core_banking_url}/transactions/?skip=${(currentPage - 1) * itemsPerPage}&limit=${itemsPerPage}`;
         columns = ["id", "account_id", "amount", "transaction_type", "status", "message", "timestamp"];
         document.getElementById("table-title").textContent = "Transactions Data Table";
     }else if (type === "NI transactions") {
-        url = `http://127.0.0.1:8002/transactions/?skip=${(currentPage - 1) * itemsPerPage}&limit=${itemsPerPage}`;
+        url = `${config.ni_url}/transactions/?skip=${(currentPage - 1) * itemsPerPage}&limit=${itemsPerPage}`;
         columns = ["transaction_id", "card_number", "amount", "atm_id", "transaction_type", "status", "message", "timestamp"];
         document.getElementById("table-title").textContent = "NI Transactions Data Table";
     }
@@ -189,7 +205,7 @@ function loadTable(type) {
 
 
 // Fonction pour naviguer à la page précédente
-function previousPage() {
+export function previousPage() {
     if (currentPage > 1) {
         currentPage--;
         loadTable(currentObjectType);
@@ -197,18 +213,18 @@ function previousPage() {
 }
 
 // Fonction pour naviguer à la page suivante
-function nextPage() {
+export function nextPage() {
     currentPage++;
     loadTable(currentObjectType);
 }
 // Fonction pour capitaliser la première lettre d'un mot
-function capitalizeFirstLetter(string) {
+export function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
 
 // Fonction pour remplir le tableau
-function populateTable(data, columns) {
+export function populateTable(data, columns) {
     const tableHeaders = document.getElementById("table-headers");
     const tableBody = document.getElementById("data-table").querySelector("tbody");
 
@@ -242,3 +258,15 @@ document.getElementById('pagination').innerHTML = `
 loadCustomers();
 // Charger les clients par défaut au chargement de la page
 //loadTable("customers");
+//window.loadAtmTransactions = loadCustomers();
+//window.showTransactionForm = loadNiTransactions();
+
+window.submitForm = submitForm;
+
+window.onload = function() {
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+    window.nextPage = nextPage;
+    window.previousPage = previousPage;
+    
+};
