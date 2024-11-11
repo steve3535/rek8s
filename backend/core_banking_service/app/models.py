@@ -32,7 +32,7 @@ class Card(Base):
     __tablename__ = "cards"
     id = Column(Integer, primary_key=True, index=True)
     card_number = Column(String, unique=True, nullable=False, index=True)
-    account_id = Column(Integer, ForeignKey("accounts.id"), nullable=False)
+    account_id = Column(Integer, ForeignKey("accounts.id"), unique=True, nullable=False)
     pin = Column(Integer, nullable=False)  
     account = relationship("Account", back_populates="cards")
     
