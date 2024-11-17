@@ -255,6 +255,5 @@ def get_transaction(skip: int = 0, limit: int = 10, db: Session = Depends(get_db
     transactions = db.query(Transaction).order_by(Transaction.timestamp.desc()).offset(skip).limit(limit).all()
     return transactions
 
-
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=port_banking, reload=True)
