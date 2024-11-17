@@ -1,14 +1,17 @@
+FROM node:16-alpine as builder
 
-FROM python:3.10-slim
-
-# Définir le répertoire de travail  du conteneur
 WORKDIR /app
 
-# Copie de tous les fichiers  dans le conteneur
-COPY . .
+# Copy only what we need
+COPY frontend/ ./frontend/
+COPY backend/.env ./backend/.env
+COPY generate-config.js .
 
-# Exposer le port sur lequel le serveur HTTP Python écoutera
-EXPOSE 8080
+# Generate the config file
+RUN node generate-config.js
 
-# Commande pour démarrer le serveur HTTP
-CMD ["python", "-m", "http.server", "8080"]
+# Use nginx to serve the static files
+FROM nginx:alpine
+COPY --from=builder /app/frontend /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
