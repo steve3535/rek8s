@@ -1,10 +1,8 @@
-// config.js
+// This file is auto-generated - do not edit manually
 const config = {
-    ni_url: "http://127.0.0.1:8002",
-    atm_url: "http://127.0.0.1:8001",
-    core_banking_url: "http://127.0.0.1:8000"
-  };
-  
-  // Exporter le module pour l'importation
-  export default config;
-  
+    ni_url: "http://127.0.0.1:8102",
+    atm_url: "http://127.0.0.1:8101",
+    core_banking_url: "http://127.0.0.1:8100"
+};
+
+export default config;
