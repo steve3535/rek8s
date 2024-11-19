@@ -14,7 +14,7 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-load_dotenv(dotenv_path="/rek8s/backend/.env")
+load_dotenv(dotenv_path="/rek8s/.env")
 
 port_banking = int(os.getenv("PORT_BANKING", 9000))
 
