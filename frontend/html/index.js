@@ -152,11 +152,8 @@ export function loadTable(type) {
         url = `${config.core_banking_url}/transactions/`;
     } else if (currentObjectType === "NI transactions") {
         url = `${config.ni_url}/transactions/`;
-    }
-    
-
-
-   
+    }   
+ 
 
     if (type === "customers") {
         url = `${config.core_banking_url}/customers/?skip=${(currentPage - 1) * itemsPerPage}&limit=${itemsPerPage}`;
@@ -186,7 +183,6 @@ export function loadTable(type) {
             populateTable(data, columns);
         });
 }
-
 
 
 // Fonction pour naviguer à la page précédente
