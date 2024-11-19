@@ -1,44 +1,42 @@
-version: "3.8"
-
 services:
   atm_service:
     build:
-      context: ./atm_service
+      context: backend/atm_service
       dockerfile: Dockerfile
     env_file:
-      - ./atm_service/.env
+      - .env
     ports:
-      - "${ATM_SERVICE_PORT}:${ATM_SERVICE_PORT}" # Port dynamique depuis .env
+      - "${PORT_ATM}:${PORT_ATM}"
     depends_on:
       - core_banking_service
 
   core_banking_service:
     build:
-      context: ./core_banking_service
+      context: backend/core_banking_service
       dockerfile: Dockerfile
     env_file:
-      - ./core_banking_service/.env
+      - .env
     ports:
-      - "${CORE_BANKING_SERVICE_PORT}:${CORE_BANKING_SERVICE_PORT}"
+      - "${PORT_BANKING}:${PORT_BANKING}"
 
   ni_switch_service:
     build:
-      context: ./ni_switch_service
+      context: backend/ni_switch_service
       dockerfile: Dockerfile
     env_file:
-      - ./ni_switch_service/.env
+      - .env
     ports:
-      - "${NI_SWITCH_SERVICE_PORT}:${NI_SWITCH_SERVICE_PORT}"
+      - "${PORT_NI}:${PORT_NI}"
 
   rero_web_service:
     build:
-      context: ./rero_web_service
+      context: .
       dockerfile: Dockerfile
     env_file:
-      - ./rero_web_service/.env
+      - .env
     ports:
-      - "${RERO_WEB_SERVICE_PORT}:8080" # Web service exposé sur le port 80 dans le conteneur
+      - "${RECO_WEB_PORT}:80"
     depends_on:
       - atm_service
       - ni_switch_service
-
+      - core_banking_service
