@@ -22,9 +22,9 @@ export function openModal() {
         modalTitle.innerText = 'Add New Customer';
         createForm.innerHTML = `
             <label for="name">Name:</label>
-            <input type="text" id="name" name="name"><br><br>
+            <input type="text" id="name" name="name" required><br><br>
             <label for="email">Email:</label>
-            <input type="text" id="email" name="email"><br><br>
+            <input type="email" id="email" name="email" required><br><br>
         `;
     } else if (currentObjectType === 'accounts') {
         modalTitle.innerText = 'Add New Account';
@@ -38,11 +38,11 @@ export function openModal() {
         modalTitle.innerText = 'Add New Card';
         createForm.innerHTML = `
             <label for="card_number">Card Number:</label>
-            <input type="text" id="card_number" name="card_number"><br><br>
+            <input type="text" id="card_number" name="card_number" required><br><br>
             <label for="account_id">Account ID:</label>
-            <input type="number" id="account_id" name="account_id"><br><br>
+            <input type="number" id="account_id" name="account_id" required><br><br>
             <label for="pin">PIN:</label>
-            <input type="number" id="pin" name="pin"><br><br>
+            <input type="number" id="pin" name="pin" required><br><br>
         `;
     } 
 }
@@ -55,6 +55,14 @@ export function closeModal() {
 // Fonction pour soumettre le formulaire
 export function submitForm() {
     const form = document.getElementById('create-form');
+
+    // validation du formulaire
+    if (!form.checkValidity()) {
+        alert("Please fill in all required fields.");
+        form.reportValidity(); // Affiche les erreurs dans le formulaire
+        return; // Empêche la soumission si le formulaire est invalide
+    }
+
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
     let url = "";
