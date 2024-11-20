@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, constr
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
@@ -88,7 +88,7 @@ class TransactionOut(BaseModel):
 
 class CustomerCreate(BaseModel):
     name: str
-    email: str
+    email: EmailStr
 
 class CustomerOut(BaseModel):
     id: int
