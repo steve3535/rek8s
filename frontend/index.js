@@ -30,9 +30,9 @@ export function openModal() {
         modalTitle.innerText = 'Add New Account';
         createForm.innerHTML = `
             <label for="balance">Balance:</label>
-            <input type="number" id="balance" name="balance"><br><br>
+            <input type="number" id="balance" name="balance" required><br><br>
             <label for="customer_id">Customer ID:</label>
-            <input type="number" id="customer_id" name="customer_id"><br><br>
+            <input type="number" id="customer_id" name="customer_id" required><br><br>
         `;
     } else if (currentObjectType === 'cards') {
         modalTitle.innerText = 'Add New Card';
@@ -146,8 +146,16 @@ export function loadTable(type) {
     
     currentObjectType = type;
     const addButton = document.getElementById('add-button');
-    addButton.style.display = 'block';
-
+  
+    // Masquer ou afficher le bouton en fonction du type
+    if (currentObjectType === "NI transactions") {
+        addButton.style.display = 'none'; 
+    } else if (currentObjectType === "transactions") {
+        addButton.style.display = 'none';
+    } else {    
+        addButton.style.display = 'block'; 
+    }
+    
     // Modifier le texte du bouton en fonction de l'objet sélectionné
     if (currentObjectType === "customers") {
         url = `${config.core_banking_url}/customers/`;
