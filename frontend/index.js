@@ -2,14 +2,36 @@
 import config from './config.js';
 let url = "";
 let columns = [];
+let validAccountIDs = []; // Variable pour stocker les IDs valides
 
 
 // Garde la trace de l'objet sélectionné
 let currentObjectType = '';
 let currentPage = 1; // Page actuelle
 const itemsPerPage = 10; // Nombre d'éléments par page
+
+// Fonction pour récupérer les Account IDs valides depuis l'API
+async function fetchAccountIDs() {
+    try {
+        const response = await fetch('http://127.0.0.1:8000/accounts/'); 
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const accounts = await response.json();
+        
+        // Stocker les IDs valides dans la variable globale
+        validAccountIDs = accounts
+            .map(account => String(account.id)) 
+            .filter(id => id !== null && id !== undefined);
+        return validAccountIDs;
+    } catch (error) {
+        console.error('Il y a eu un problème avec votre requête fetch :', error);
+        return []; // Retourne un tableau vide en cas d'erreur
+    }
+}
+
 // Fonction pour ouvrir le modal avec le formulaire approprié
-export function openModal() {
+export async function openModal() {
     document.getElementById('modal').style.display = 'block';
     const modalTitle = document.getElementById('modal-title');
     const createForm = document.getElementById('create-form');
@@ -22,39 +44,71 @@ export function openModal() {
         modalTitle.innerText = 'Add New Customer';
         createForm.innerHTML = `
             <label for="name">Name:</label>
-            <input type="text" id="name" name="name"><br><br>
+            <input type="text" id="name" name="name" required><br><br>
             <label for="email">Email:</label>
-            <input type="text" id="email" name="email"><br><br>
+            <input type="email" id="email" name="email" required><br><br>
         `;
     } else if (currentObjectType === 'accounts') {
         modalTitle.innerText = 'Add New Account';
         createForm.innerHTML = `
             <label for="balance">Balance:</label>
-            <input type="number" id="balance" name="balance"><br><br>
+            <input type="number" id="balance" name="balance" required><br><br>
             <label for="customer_id">Customer ID:</label>
-            <input type="number" id="customer_id" name="customer_id"><br><br>
+            <input type="number" id="customer_id" name="customer_id" required><br><br>
         `;
     } else if (currentObjectType === 'cards') {
         modalTitle.innerText = 'Add New Card';
         createForm.innerHTML = `
             <label for="card_number">Card Number:</label>
-            <input type="text" id="card_number" name="card_number"><br><br>
+            <input type="text" id="card_number" name="card_number" required><br><br>
             <label for="account_id">Account ID:</label>
-            <input type="number" id="account_id" name="account_id"><br><br>
+            <input type="number" id="account_id" name="account_id" list="account_id_datalist" required><br><br>
+            <datalist id="account_id_datalist"></datalist>
             <label for="pin">PIN:</label>
-            <input type="number" id="pin" name="pin"><br><br>
+            <input type="number" id="pin" name="pin" required><br><br>
         `;
-    } 
+    }
+
+    // Récupérer et remplir les Account IDs valides dans le datalist
+    const accountIDs = await fetchAccountIDs();
+    const dataList = document.getElementById('account_id_datalist');
+
+    if (dataList) {
+        dataList.innerHTML = '';
+        accountIDs.forEach(id => {
+            const option = document.createElement('option');
+            option.value = id;
+            dataList.appendChild(option);
+        });
+    } else {
+        console.error('Le datalist pour account_id n\'a pas été trouvé');
+    }
 }
+    
 
 // Fonction pour fermer le modal
 export function closeModal() {
     document.getElementById('modal').style.display = 'none';
 }
 
-// Fonction pour soumettre le formulaire
+// Fonction pour soumettre le formulaire avec validation de l'account_id
 export function submitForm() {
     const form = document.getElementById('create-form');
+
+    // validation du formulaire
+    if (!form.checkValidity()) {
+        alert("Please fill in all required fields.");
+        form.reportValidity(); // Affiche les erreurs dans le formulaire
+        return; // Empêche la soumission si le formulaire est invalide
+    }
+
+    // Vérifier si l'account_id est valide
+    const accountIdInput = document.getElementById('account_id');
+    if (accountIdInput && !validAccountIDs.includes(accountIdInput.value)) {
+        alert("L'Account ID saisi n'est pas valide.");
+        return; // Empêcher la soumission si l'account_id est invalide
+    }
+
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
     let url = "";
