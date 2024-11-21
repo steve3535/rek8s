@@ -14,9 +14,9 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-load_dotenv(dotenv_path="/rek8s/backend/.env")
+load_dotenv(dotenv_path="/rek8s/.env")
 
-port_banking = int(os.getenv("PORT_BANKING", 9000))
+port_banking = int(os.getenv("PORT_BANKING", 8000))
 
 
 # Définir les origines autorisées (peut-être '*' pour autoriser toutes les origines)
@@ -31,20 +31,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-
-
-
-
 # Create a new customer
 @app.post("/customers/", response_model=CustomerOut)
 def create_customer(customer: CustomerCreate, db: Session = Depends(get_db)):
-    db_customer = Customer(name=customer.name, email=customer.email)
-    db.add(db_customer)
-    db.commit()
-    db.refresh(db_customer)
-    return db_customer
 
+    # Vérification d'un email unique
+    existing_customer = db.query(Customer).filter(Customer.email == customer.email).first()
+    if existing_customer:
+        raise HTTPException(status_code=400, detail="Email already registered")
+     # Création du client
+    db_customer = Customer(name=customer.name, email=customer.email)
+    try:
+        db.add(db_customer)
+        db.commit()
+        db.refresh(db_customer)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="An error occurred while creating the customer")
+
+    return db_customer
 @app.get("/customers/", response_model=List[CustomerOut])
 def read_customers(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     return db.query(Customer).offset(skip).limit(limit).all()

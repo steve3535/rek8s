@@ -192,8 +192,16 @@ export function loadTable(type) {
     
     currentObjectType = type;
     const addButton = document.getElementById('add-button');
-    addButton.style.display = 'block';
-
+  
+    // Masquer ou afficher le bouton en fonction du type
+    if (currentObjectType === "NI transactions") {
+        addButton.style.display = 'none'; 
+    } else if (currentObjectType === "transactions") {
+        addButton.style.display = 'none';
+    } else {    
+        addButton.style.display = 'block'; 
+    }
+    
     // Modifier le texte du bouton en fonction de l'objet sélectionné
     if (currentObjectType === "customers") {
         url = `${config.core_banking_url}/customers/`;

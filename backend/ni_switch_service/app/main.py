@@ -14,7 +14,7 @@ import uvicorn
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-load_dotenv(dotenv_path="/rek8s/backend/.env")
+load_dotenv(dotenv_path="/rek8s/.env")
 port_ni = int(os.getenv("PORT_NI", 8005))
 port_banking = int(os.getenv("PORT_BANKING", 8000))
 CORE_BANKING_URL = f"http://localhost:{port_banking}"

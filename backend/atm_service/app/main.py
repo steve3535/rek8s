@@ -15,7 +15,7 @@ Base.metadata.create_all(bind=engine)
 
 # Configuration FastAPI
 app = FastAPI()
-load_dotenv(dotenv_path="/rek8s/backend/.env")
+load_dotenv(dotenv_path="/rek8s/.env")
 port_atm = int(os.getenv("PORT_ATM", 8008))
 port_ni = int(os.getenv("PORT_NI", 8002))
 SWITCH_URL = f"http://127.0.0.1:{port_ni}"
