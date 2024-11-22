@@ -3,8 +3,8 @@ FROM node:16-alpine as builder
 WORKDIR /app
 
 # Copy only what we need
-COPY frontend/ ./frontend/
-COPY backend/.env ./backend/.env
+COPY frontend ./frontend/
+COPY .env ./backend/.env
 COPY generate-config.js .
 
 # Generate the config file

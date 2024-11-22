@@ -17,7 +17,7 @@ app = FastAPI()
 load_dotenv(dotenv_path="/rek8s/.env")
 port_ni = int(os.getenv("PORT_NI", 8005))
 port_banking = int(os.getenv("PORT_BANKING", 8000))
-CORE_BANKING_URL = f"http://localhost:{port_banking}"
+CORE_BANKING_URL = f"http://core_banking_service:{port_banking}"
 
 # Définir les origines autorisées (peut-être '*' pour autoriser toutes les origines)
 #origins = [ "http://127.0.0.1:5500",      "http://localhost:5500",  ]

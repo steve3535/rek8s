@@ -18,7 +18,7 @@ app = FastAPI()
 load_dotenv(dotenv_path="/rek8s/.env")
 port_atm = int(os.getenv("PORT_ATM", 8008))
 port_ni = int(os.getenv("PORT_NI", 8002))
-SWITCH_URL = f"http://127.0.0.1:{port_ni}"
+SWITCH_URL = f"http://ni_switch_service:{port_ni}"
 
 #origins = ["http://127.0.0.1:5500",  "http://localhost:5500",  ]
 
